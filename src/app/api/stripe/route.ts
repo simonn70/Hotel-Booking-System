@@ -3,7 +3,8 @@ import Stripe from 'stripe';
 import { authOptions } from '@/libs/auth';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
-import { getRoom } from '@/libs/apis';
+import { createBooking, getRoom } from '@/libs/apis';
+import { log } from 'console';
 
 const stripe = new Stripe("sk_test_51MjQm2Lngv6rIXCJinhe8VzRkaWQsfjt6agKRSZhFqF5qxWd0EXfDGoix1YYt8e6BeHUyRvqNSJ2eWZ8zJQgv3Mt00y6Y3BSV0", {
   apiVersion: '2023-08-16',
@@ -52,6 +53,7 @@ export async function POST(req: Request, res: Response) {
 
   try {
     const room = await getRoom(hotelRoomSlug);
+    
     const discountPrice = room.price - (room.price / 100) * room.discount;
     const totalPrice = discountPrice * numberOfDays;
 
@@ -84,6 +86,19 @@ export async function POST(req: Request, res: Response) {
         discount: room.discount,
         totalPrice
       }
+    });
+
+    await createBooking({
+      adults: Number(adults),
+      checkinDate,
+      checkoutDate,
+      children: Number(children),
+      hotelRoom: room._id,
+      numberOfDays: Number(numberOfDays),
+      discount: Number(room?.discount),
+      totalPrice: Number(totalPrice),
+      user: userId,
+      
     });
 
     return NextResponse.json(stripeSession, {
