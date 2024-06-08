@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 import { authOptions } from '@/libs/auth';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
-import { createBooking, getRoom } from '@/libs/apis';
+import { createBooking, getRoom, updateHotelRoom } from '@/libs/apis';
 import { log } from 'console';
 
 const stripe = new Stripe("sk_test_51MjQm2Lngv6rIXCJinhe8VzRkaWQsfjt6agKRSZhFqF5qxWd0EXfDGoix1YYt8e6BeHUyRvqNSJ2eWZ8zJQgv3Mt00y6Y3BSV0", {
@@ -100,6 +100,7 @@ export async function POST(req: Request, res: Response) {
       user: userId,
       
     });
+    await updateHotelRoom(room?._id);
 
     return NextResponse.json(stripeSession, {
       status: 200,

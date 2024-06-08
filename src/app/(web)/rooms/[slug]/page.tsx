@@ -7,6 +7,9 @@ import { AiOutlineMedicineBox } from 'react-icons/ai';
 import { GiSmokeBomb } from 'react-icons/gi';
 import { useState } from 'react';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
+
+
 
 import { getRoom } from '@/libs/apis';
 import LoadingSpinner from '../../loading';
@@ -25,7 +28,7 @@ const RoomDetails = (props: { params: { slug: string } }) => {
   const [checkoutDate, setCheckoutDate] = useState<Date | null>(null);
   const [adults, setAdults] = useState(1);
   const [noOfChildren, setNoOfChildren] = useState(0);
-
+ const route = useRouter()
   const fetchRoom = async () => getRoom(slug);
 
   const { data: room, error, isLoading } = useSWR('/api/room', fetchRoom);
@@ -58,6 +61,10 @@ const RoomDetails = (props: { params: { slug: string } }) => {
 
     const stripe = await getStripe();
     console.log(stripe);
+
+    if (!stripe){
+      //navigate to stripe
+    }
     
 
     try {
@@ -75,8 +82,12 @@ const RoomDetails = (props: { params: { slug: string } }) => {
           sessionId: stripeSession.id,
         });
 
+
+
         if (result.error) {
           toast.error('Payment Failed');
+          route.push('/auth')
+          
         }
       }
     } catch (error) {
