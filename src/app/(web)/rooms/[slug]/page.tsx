@@ -85,7 +85,7 @@ const RoomDetails = (props: { params: { slug: string } }) => {
 
 
         if (result.error) {
-          toast.error('Payment Failed');
+          toast.error('Payment Failed, Kindly loggin to pay');
           route.push('/auth')
           
         }
